@@ -1,0 +1,20 @@
+[Unit]
+Description=Discord Wake-on-LAN Bot
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/discord-wakeonlan
+ExecStart=/usr/bin/node main.js
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=discord-wakeonlan
+
+# 環境変数ファイル
+EnvironmentFile=%h/discord-wakeonlan/.env
+
+[Install]
+WantedBy=default.target

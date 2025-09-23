@@ -21,8 +21,8 @@ Discordボットを使用してPCをWake-on-LANで起動するツールです。
 ### 1. リポジトリのクローン
 
 ```bash
-git clone https://github.com/kamesuta/discord-wakeonlan.git
-cd discord-wakeonlan
+git clone https://github.com/kamesuta/discord-wakeonlan.git ~/discord-wakeonlan
+cd ~/discord-wakeonlan
 ```
 
 ### 2. 依存関係のインストール
@@ -78,7 +78,9 @@ BUTTON_ID=wake-example
 
 ## 使用方法
 
-### パネルの投稿
+### 手動実行
+
+#### パネルの投稿
 
 ```bash
 npm run panel
@@ -86,13 +88,81 @@ npm run panel
 
 このコマンドを実行すると、指定したチャンネルにPC起動パネルが投稿されます。
 
-### ボットの起動
+#### ボットの起動
 
 ```bash
 npm run start
 ```
 
 このコマンドでボットを起動し、ボタンクリック時の処理を開始します。
+
+### systemdサービスとして実行（推奨）
+
+本番環境では、systemdサービスとして実行することを推奨します。これにより、システム起動時の自動開始、エラー時の自動再起動、ログ管理などが可能になります。
+
+#### 事前準備
+
+まず、プロジェクトファイルを`$HOME/discord-wakeonlan`に配置してください：
+
+```bash
+mkdir -p $HOME/discord-wakeonlan
+cp -r . $HOME/discord-wakeonlan/
+```
+
+#### サービスのインストール
+
+```bash
+./install-service.sh
+```
+
+このスクリプトは以下の処理を自動実行します：
+- `$HOME/discord-wakeonlan`の存在確認
+- systemdユーザーサービスの登録と有効化
+
+#### サービスの管理
+
+```bash
+# サービス開始
+systemctl --user start discord-wakeonlan
+
+# サービス停止
+systemctl --user stop discord-wakeonlan
+
+# サービス再起動
+systemctl --user restart discord-wakeonlan
+
+# サービス状態確認
+systemctl --user status discord-wakeonlan
+
+# 自動起動の有効/無効
+systemctl --user enable discord-wakeonlan
+systemctl --user disable discord-wakeonlan
+```
+
+#### ログの確認
+
+```bash
+# リアルタイムログ表示
+journalctl --user -u discord-wakeonlan -f
+
+# 過去のログ表示
+journalctl --user -u discord-wakeonlan
+
+# 今日のログ表示
+journalctl --user -u discord-wakeonlan --since today
+```
+
+#### サービスのアンインストール
+
+```bash
+./uninstall-service.sh
+```
+
+このスクリプトは以下の処理を自動実行します：
+- サービスの停止と無効化
+- サービスファイルの削除
+
+注意: `$HOME/discord-wakeonlan`ディレクトリは手動で削除してください
 
 ## 複数PC対応
 
