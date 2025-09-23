@@ -6,7 +6,7 @@ Wants=network.target
 [Service]
 Type=simple
 WorkingDirectory=%h/discord-wakeonlan
-ExecStart=/usr/bin/node main.js
+ExecStart=/usr/bin/node src/main.js
 Restart=always
 RestartSec=10
 StandardOutput=journal

@@ -9,6 +9,23 @@ Discordボットを使用してPCをWake-on-LANで起動するツールです。
 - 複数PC対応（環境変数で設定可能）
 - シンプルで使いやすいUI
 
+## プロジェクト構造
+
+```
+discord-wakeonlan/
+├── src/                    # ソースコード
+│   ├── main.js            # Discordボット本体
+│   └── panel.js           # パネル投稿スクリプト
+├── service/               # サービス関連ファイル
+│   ├── discord-wakeonlan.service
+│   ├── install-service.sh
+│   └── uninstall-service.sh
+├── package.json           # パッケージ設定
+├── package-lock.json
+├── README.md
+└── LICENSE
+```
+
 ## 必要な環境
 
 - Node.js (v16以上推奨)
@@ -112,7 +129,7 @@ cp -r . $HOME/discord-wakeonlan/
 #### サービスのインストール
 
 ```bash
-./install-service.sh
+./service/install-service.sh
 ```
 
 このスクリプトは以下の処理を自動実行します：
@@ -155,7 +172,7 @@ journalctl --user -u discord-wakeonlan --since today
 #### サービスのアンインストール
 
 ```bash
-./uninstall-service.sh
+./service/uninstall-service.sh
 ```
 
 このスクリプトは以下の処理を自動実行します：

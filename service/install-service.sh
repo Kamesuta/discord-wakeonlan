@@ -39,8 +39,8 @@ if [ ! -d "$INSTALL_DIR" ]; then
 fi
 
 # 2. 必要なファイルの存在確認
-if [ ! -f "$INSTALL_DIR/main.js" ]; then
-    print_error "main.js が見つかりません"
+if [ ! -f "$INSTALL_DIR/src/main.js" ]; then
+    print_error "src/main.js が見つかりません"
     exit 1
 fi
 
@@ -54,7 +54,7 @@ print_success "必要なファイルを確認しました"
 # 3. サービスファイルのコピー
 print_info "サービスファイルをコピー中..."
 mkdir -p "$HOME/.config/systemd/user"
-cp "$SERVICE_FILE" "$HOME/.config/systemd/user/"
+cp "$(dirname "$0")/$SERVICE_FILE" "$HOME/.config/systemd/user/"
 print_success "サービスファイルをコピーしました"
 
 # 4. systemdのリロード

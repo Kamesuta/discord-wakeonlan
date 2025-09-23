@@ -2,7 +2,7 @@
   "name": "discord-wol-panel",
   "version": "1.0.0",
   "description": "DiscordでWake-on-LANパネルを出す最小ボット",
-  "main": "main.js",
+  "main": "src/main.js",
   "engines": { "node": ">=16" },
   "dependencies": {
     "discord.js": "^14.11.0",
@@ -10,7 +10,7 @@
     "dotenv": "^16.3.1"
   },
   "scripts": {
-    "start": "node main.js",
-    "panel": "node panel.js"
+    "start": "node src/main.js",
+    "panel": "node src/panel.js"
   }
 }
