@@ -6,11 +6,11 @@ Wants=network.target
 [Service]
 Type=simple
 WorkingDirectory=%h/discord-wakeonlan
-ExecStart=/usr/bin/node src/main.js
+ExecStart=NODE_PATH_PLACEHOLDER src/main.js
 Restart=always
 RestartSec=10
-StandardOutput=journal
-StandardError=journal
+StandardOutput=append:%h/discord-wakeonlan/logs/out.log
+StandardError=append:%h/discord-wakeonlan/logs/err.log
 SyslogIdentifier=discord-wakeonlan
 
 # 環境変数ファイル

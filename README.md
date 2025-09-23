@@ -160,13 +160,16 @@ systemctl --user disable discord-wakeonlan
 
 ```bash
 # リアルタイムログ表示
-journalctl --user -u discord-wakeonlan -f
+tail -f ~/discord-wakeonlan/logs/out.log    # 標準出力ログ
+tail -f ~/discord-wakeonlan/logs/err.log    # エラーログ
 
 # 過去のログ表示
-journalctl --user -u discord-wakeonlan
+cat ~/discord-wakeonlan/logs/out.log         # 標準出力ログ全体
+cat ~/discord-wakeonlan/logs/err.log         # エラーログ全体
 
-# 今日のログ表示
-journalctl --user -u discord-wakeonlan --since today
+# 最新のログを確認
+tail -n 50 ~/discord-wakeonlan/logs/out.log  # 最新50行
+tail -n 50 ~/discord-wakeonlan/logs/err.log  # 最新50行
 ```
 
 #### サービスのアンインストール

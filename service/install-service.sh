@@ -51,18 +51,31 @@ fi
 
 print_success "必要なファイルを確認しました"
 
-# 3. サービスファイルのコピー
+# 3. ログディレクトリの作成
+print_info "ログディレクトリを作成中..."
+mkdir -p "$INSTALL_DIR/logs"
+print_success "ログディレクトリを作成しました"
+
+# 4. Node.jsのパスを取得
+NODE_PATH=$(which node)
+if [ -z "$NODE_PATH" ]; then
+    print_error "Node.js が見つかりません"
+    exit 1
+fi
+print_info "Node.js パス: $NODE_PATH"
+
+# 5. サービスファイルのコピーとパス置換
 print_info "サービスファイルをコピー中..."
 mkdir -p "$HOME/.config/systemd/user"
-cp "$(dirname "$0")/$SERVICE_FILE" "$HOME/.config/systemd/user/"
+sed "s|NODE_PATH_PLACEHOLDER|$NODE_PATH|g" "$(dirname "$0")/$SERVICE_FILE" > "$HOME/.config/systemd/user/$SERVICE_FILE"
 print_success "サービスファイルをコピーしました"
 
-# 4. systemdのリロード
+# 6. systemdのリロード
 print_info "systemdをリロード中..."
 systemctl --user daemon-reload
 print_success "systemdをリロードしました"
 
-# 5. サービスの有効化
+# 7. サービスの有効化
 print_info "サービスを有効化中..."
 systemctl --user enable "$SERVICE_NAME"
 print_success "サービスを有効化しました"
