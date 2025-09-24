@@ -66,7 +66,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
         // 接続設定を組み立て
         const connOpts = { host: SSH_HOST, username: SSH_USER };
         if (SSH_PASS) connOpts.password = SSH_PASS;
-        if (SSH_KEY_PATH) connOpts.privateKey = SSH_KEY_PATH;
+        if (SSH_KEY_PATH) connOpts.privateKeyPath = SSH_KEY_PATH;
 
         await ssh.connect(connOpts);
 
