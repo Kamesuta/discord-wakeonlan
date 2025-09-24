@@ -3,11 +3,14 @@
   "version": "1.0.0",
   "description": "DiscordでWake-on-LANパネルを出す最小ボット",
   "main": "src/main.js",
-  "engines": { "node": ">=16" },
+  "engines": {
+    "node": ">=16"
+  },
   "dependencies": {
     "discord.js": "^14.11.0",
-    "wol": "^1.0.7",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "node-ssh": "^13.2.1",
+    "wol": "^1.0.7"
   },
   "scripts": {
     "start": "node src/main.js",
