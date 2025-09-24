@@ -3,7 +3,7 @@
 // npm run start で起動してください。
 
 require('dotenv').config();
-const { Client, GatewayIntentBits, Events } = require('discord.js');
+const { Client, GatewayIntentBits, Events, MessageFlags } = require('discord.js');
 const wol = require('wol');
 const { NodeSSH } = require('node-ssh');
 const ssh = new NodeSSH();
@@ -44,7 +44,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
   if (interaction.customId === WAKE_ID) {
     try {
       await wol.wake(MAC);
-      await interaction.reply({ content: '🔔 Wake-on-LANパケットを送信しました！', ephemeral: true });
+      await interaction.reply({ content: '🔔 Wake-on-LANパケットを送信しました！', flags: MessageFlags.Ephemeral });
     } catch (err) {
       console.error('❌ PC起動に失敗しました:', err);
     }
@@ -56,11 +56,11 @@ client.on(Events.InteractionCreate, async (interaction) => {
     try {
       // SSH 情報がない場合は不可
       if (!SSH_HOST || !SSH_USER || (!SSH_PASS && !SSH_KEY_PATH)) {
-        await interaction.reply({ content: '⚠️ サーバ側の SSH 設定が不十分です', ephemeral: true });
+        await interaction.reply({ content: '⚠️ サーバ側の SSH 設定が不十分です', flags: MessageFlags.Ephemeral });
         return;
       }
 
-      await interaction.reply({ content: '⏳ スリープコマンドを送信しています...', ephemeral: true });
+      await interaction.reply({ content: '⏳ スリープコマンドを送信しています...', flags: MessageFlags.Ephemeral });
 
       try {
         // 接続設定を組み立て
@@ -77,13 +77,13 @@ client.on(Events.InteractionCreate, async (interaction) => {
 
         if (res.stderr) {
           console.error('SSH stderr:', res.stderr);
-          await interaction.followUp({ content: `⚠️ スリープ実行でエラーが発生しました: ${res.stderr}`, ephemeral: true });
+          await interaction.followUp({ content: `⚠️ スリープ実行でエラーが発生しました: ${res.stderr}`, flags: MessageFlags.Ephemeral });
         } else {
-          await interaction.followUp({ content: '💤 Windows にスリープコマンドを送信しました。', ephemeral: true });
+          await interaction.followUp({ content: '💤 Windows にスリープコマンドを送信しました。', flags: MessageFlags.Ephemeral });
         }
       } catch (err) {
         console.error('SSH error:', err);
-        await interaction.followUp({ content: '⚠️ SSH 実行中にエラーが発生しました', ephemeral: true });
+        await interaction.followUp({ content: '⚠️ SSH 実行中にエラーが発生しました', flags: MessageFlags.Ephemeral });
       }
       return;
     } catch (err) {
