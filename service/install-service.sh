@@ -53,12 +53,7 @@ fi
 
 print_success "必要なファイルを確認しました"
 
-# 3. ログディレクトリの作成
-print_info "ログディレクトリを作成中..."
-mkdir -p "$INSTALL_DIR/logs"
-print_success "ログディレクトリを作成しました"
-
-# 4. Node.jsのパスを取得
+# 3. Node.jsのパスを取得
 NODE_PATH=$(which node)
 if [ -z "$NODE_PATH" ]; then
     print_error "Node.js が見つかりません"
@@ -66,7 +61,7 @@ if [ -z "$NODE_PATH" ]; then
 fi
 print_info "Node.js パス: $NODE_PATH"
 
-# 5. サービスファイルのコピーとパス置換
+# 4. サービスファイルのコピーとパス置換
 print_info "サービスファイルをコピー中..."
 print_info "インストールディレクトリ: $INSTALL_DIR"
 sudo mkdir -p "/etc/systemd/system"
@@ -75,12 +70,12 @@ sed -e "s|NODE_PATH_PLACEHOLDER|$NODE_PATH|g" -e "s|INSTALL_DIR_PLACEHOLDER|$INS
 sudo mv "/tmp/$SERVICE_FILE" "/etc/systemd/system/$SERVICE_FILE"
 print_success "サービスファイルをコピーしました"
 
-# 6. systemdのリロード
+# 5. systemdのリロード
 print_info "systemdをリロード中..."
 sudo systemctl daemon-reload
 print_success "systemdをリロードしました"
 
-# 7. サービスの有効化
+# 6. サービスの有効化
 print_info "サービスを有効化中..."
 sudo systemctl enable "$SERVICE_NAME"
 print_success "サービスを有効化しました"

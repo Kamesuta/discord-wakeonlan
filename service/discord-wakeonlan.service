@@ -9,8 +9,6 @@ WorkingDirectory=INSTALL_DIR_PLACEHOLDER
 ExecStart=NODE_PATH_PLACEHOLDER src/main.js
 Restart=always
 RestartSec=10
-StandardOutput=append:INSTALL_DIR_PLACEHOLDER/logs/out.log
-StandardError=append:INSTALL_DIR_PLACEHOLDER/logs/err.log
 SyslogIdentifier=discord-wakeonlan
 
 # 環境変数ファイル
