@@ -33,6 +33,19 @@ discord-wakeonlan/
 - Wake-on-LAN対応のPC
 - PCのMACアドレス
 
+### Node.js のインストール（Debian/Ubuntu 推奨）
+
+`nvm` でユーザーインストールした Node.js は `sudo` や `systemd` 実行時に見つからないことがあります。本プロジェクトをサービスとして運用する場合は、NodeSource の公式リポジトリからシステムにインストールする方法を推奨します。
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# 動作確認（バージョンとパスを確認）
+node -v
+which node
+```
+
 ## セットアップ
 
 ### 1. リポジトリのクローン
@@ -71,9 +84,16 @@ MAC_ADDRESS=XX:XX:XX:XX:XX:XX
 # PC名（パネルに表示される名前）
 PC_NAME=Example-PC
 
-# ボタンID（他のPCパネルと区別するためのID）
-# 複数PCを使用する場合は、それぞれ異なるIDを設定してください
-BUTTON_ID=wake-example
+# ボタンID（複数PC時の衝突回避に使用）
+WAKE_BUTTON_ID=wake-example
+SLEEP_BUTTON_ID=sleep-example
+
+# スリープ実行のための SSH 設定（SLEEP_CMD を使う場合）
+# 次のいずれかを設定: SSH_PASS または SSH_KEY_PATH
+SSH_HOST=
+SSH_USER=
+SSH_PASS=
+SSH_KEY_PATH=
 ```
 
 ### 4. Discord Botの作成
@@ -113,76 +133,59 @@ npm run start
 
 このコマンドでボットを起動し、ボタンクリック時の処理を開始します。
 
-### systemdサービスとして実行（推奨）
+### systemd サービスとして実行（推奨 / root 管理）
 
-本番環境では、systemdサービスとして実行することを推奨します。これにより、システム起動時の自動開始、エラー時の自動再起動、ログ管理などが可能になります。
-
-#### 事前準備
-
-まず、プロジェクトファイルを`$HOME/discord-wakeonlan`に配置してください：
-
-```bash
-mkdir -p $HOME/discord-wakeonlan
-cp -r . $HOME/discord-wakeonlan/
-```
+本番環境では、`systemd` のシステムサービスとして実行することを推奨します。これにより、OS 起動時の自動開始、エラー時の自動再起動、ジャーナルへのログ集約が可能です。
 
 #### サービスのインストール
 
 ```bash
-./service/install-service.sh
+sudo bash service/install-service.sh
 ```
 
-このスクリプトは以下の処理を自動実行します：
-- `$HOME/discord-wakeonlan`の存在確認
-- systemdユーザーサービスの登録と有効化
+このスクリプトは以下を行います：
+- 必要ファイルの確認（`src/main.js` と `.env`）
+- `NODE_PATH` と `WorkingDirectory` を埋めたユニットファイルを `/etc/systemd/system/discord-wakeonlan.service` へ配置
+- `systemctl daemon-reload` と `enable discord-wakeonlan`
 
 #### サービスの管理
 
 ```bash
-# サービス開始
-systemctl --user start discord-wakeonlan
-
-# サービス停止
-systemctl --user stop discord-wakeonlan
-
-# サービス再起動
-systemctl --user restart discord-wakeonlan
-
-# サービス状態確認
-systemctl --user status discord-wakeonlan
+# サービス開始/停止/再起動/状態
+sudo systemctl start discord-wakeonlan
+sudo systemctl stop discord-wakeonlan
+sudo systemctl restart discord-wakeonlan
+sudo systemctl status discord-wakeonlan
 
 # 自動起動の有効/無効
-systemctl --user enable discord-wakeonlan
-systemctl --user disable discord-wakeonlan
+sudo systemctl enable discord-wakeonlan
+sudo systemctl disable discord-wakeonlan
 ```
 
-#### ログの確認
+#### ログの確認（journalctl）
 
 ```bash
-# リアルタイムログ表示
-tail -f ~/discord-wakeonlan/logs/out.log    # 標準出力ログ
-tail -f ~/discord-wakeonlan/logs/err.log    # エラーログ
+# 追従表示
+sudo journalctl -u discord-wakeonlan -f
 
-# 過去のログ表示
-cat ~/discord-wakeonlan/logs/out.log         # 標準出力ログ全体
-cat ~/discord-wakeonlan/logs/err.log         # エラーログ全体
+# 直近 200 行
+sudo journalctl -u discord-wakeonlan -n 200
 
-# 最新のログを確認
-tail -n 50 ~/discord-wakeonlan/logs/out.log  # 最新50行
-tail -n 50 ~/discord-wakeonlan/logs/err.log  # 最新50行
+# 指定期間など（例: 今日）
+sudo journalctl -u discord-wakeonlan --since today
 ```
 
 #### サービスのアンインストール
 
 ```bash
-./service/uninstall-service.sh
+sudo bash service/uninstall-service.sh
 ```
 
 このスクリプトは以下の処理を自動実行します：
 - サービスの停止と無効化
 - サービスファイルの削除
 
-注意: `$HOME/discord-wakeonlan`ディレクトリは手動で削除してください
+注意: プロジェクトディレクトリは手動で削除してください
 
 ## 複数PC対応
 
@@ -191,14 +194,16 @@ tail -n 50 ~/discord-wakeonlan/logs/err.log  # 最新50行
 ### PC1用の設定例
 ```env
 PC_NAME=Office-PC
-BUTTON_ID=wake-office
+WAKE_BUTTON_ID=wake-office
+SLEEP_BUTTON_ID=sleep-office
 MAC_ADDRESS=XX:XX:XX:XX:XX:XX
 ```
 
 ### PC2用の設定例
 ```env
 PC_NAME=Gaming-PC
-BUTTON_ID=wake-gaming
+WAKE_BUTTON_ID=wake-gaming
+SLEEP_BUTTON_ID=sleep-gaming
 MAC_ADDRESS=YY:YY:YY:YY:YY:YY
 ```
 
