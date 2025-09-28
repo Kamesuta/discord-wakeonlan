@@ -24,7 +24,9 @@ print_warning() {
 
 # 設定
 SERVICE_NAME="discord-wakeonlan"
-INSTALL_DIR="$HOME/discord-wakeonlan"
+# 現在のスクリプトの親ディレクトリ（プロジェクトルート）を自動検出
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INSTALL_DIR="$(dirname "$SCRIPT_DIR")"
 SERVICE_FILE="discord-wakeonlan.service"
 
 print_info "Discord Wake-on-LAN Bot サービスをインストールします..."
@@ -66,28 +68,31 @@ print_info "Node.js パス: $NODE_PATH"
 
 # 5. サービスファイルのコピーとパス置換
 print_info "サービスファイルをコピー中..."
-mkdir -p "$HOME/.config/systemd/user"
-sed "s|NODE_PATH_PLACEHOLDER|$NODE_PATH|g" "$(dirname "$0")/$SERVICE_FILE" > "$HOME/.config/systemd/user/$SERVICE_FILE"
+print_info "インストールディレクトリ: $INSTALL_DIR"
+sudo mkdir -p "/etc/systemd/system"
+# NODE_PATH_PLACEHOLDERとINSTALL_DIR_PLACEHOLDERの両方を置換
+sed -e "s|NODE_PATH_PLACEHOLDER|$NODE_PATH|g" -e "s|INSTALL_DIR_PLACEHOLDER|$INSTALL_DIR|g" "$SCRIPT_DIR/$SERVICE_FILE" > "/tmp/$SERVICE_FILE"
+sudo mv "/tmp/$SERVICE_FILE" "/etc/systemd/system/$SERVICE_FILE"
 print_success "サービスファイルをコピーしました"
 
 # 6. systemdのリロード
 print_info "systemdをリロード中..."
-systemctl --user daemon-reload
+sudo systemctl daemon-reload
 print_success "systemdをリロードしました"
 
 # 7. サービスの有効化
 print_info "サービスを有効化中..."
-systemctl --user enable "$SERVICE_NAME"
+sudo systemctl enable "$SERVICE_NAME"
 print_success "サービスを有効化しました"
 
 print_success "インストールが完了しました！"
 echo ""
 print_info "使用方法:"
-echo "  サービス開始: systemctl --user start $SERVICE_NAME"
-echo "  サービス停止: systemctl --user stop $SERVICE_NAME"
-echo "  サービス再起動: systemctl --user restart $SERVICE_NAME"
-echo "  サービス状態確認: systemctl --user status $SERVICE_NAME"
-echo "  ログ確認: journalctl --user -u $SERVICE_NAME -f"
+echo "  サービス開始: sudo systemctl start $SERVICE_NAME"
+echo "  サービス停止: sudo systemctl stop $SERVICE_NAME"
+echo "  サービス再起動: sudo systemctl restart $SERVICE_NAME"
+echo "  サービス状態確認: sudo systemctl status $SERVICE_NAME"
+echo "  ログ確認: sudo journalctl -u $SERVICE_NAME -f"
 echo ""
 print_warning "注意: .envファイルの設定を確認してください"
-print_warning "設定変更後は 'systemctl --user restart $SERVICE_NAME' で再起動してください"
+print_warning "設定変更後は 'sudo systemctl restart $SERVICE_NAME' で再起動してください"

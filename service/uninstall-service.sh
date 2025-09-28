@@ -24,20 +24,23 @@ print_warning() {
 
 # 設定
 SERVICE_NAME="discord-wakeonlan"
+# 現在のスクリプトの親ディレクトリ（プロジェクトルート）を自動検出
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INSTALL_DIR="$(dirname "$SCRIPT_DIR")"
 
 print_info "Discord Wake-on-LAN Bot サービスをアンインストールします..."
 
 # 1. サービスの停止と無効化
 print_info "サービスを停止中..."
-if systemctl --user is-active --quiet "$SERVICE_NAME"; then
-    systemctl --user stop "$SERVICE_NAME"
+if sudo systemctl is-active --quiet "$SERVICE_NAME"; then
+    sudo systemctl stop "$SERVICE_NAME"
     print_success "サービスを停止しました"
 else
     print_info "サービスは既に停止しています"
 fi
 
-if systemctl --user is-enabled --quiet "$SERVICE_NAME"; then
-    systemctl --user disable "$SERVICE_NAME"
+if sudo systemctl is-enabled --quiet "$SERVICE_NAME"; then
+    sudo systemctl disable "$SERVICE_NAME"
     print_success "サービスを無効化しました"
 else
     print_info "サービスは既に無効化されています"
@@ -45,8 +48,8 @@ fi
 
 # 2. サービスファイルの削除
 print_info "サービスファイルを削除中..."
-if [ -f "$HOME/.config/systemd/user/$SERVICE_NAME.service" ]; then
-    rm "$HOME/.config/systemd/user/$SERVICE_NAME.service"
+if [ -f "/etc/systemd/system/$SERVICE_NAME.service" ]; then
+    sudo rm "/etc/systemd/system/$SERVICE_NAME.service"
     print_success "サービスファイルを削除しました"
 else
     print_info "サービスファイルは既に削除されています"
@@ -54,8 +57,8 @@ fi
 
 # 3. systemdのリロード
 print_info "systemdをリロード中..."
-systemctl --user daemon-reload
+sudo systemctl daemon-reload
 print_success "systemdをリロードしました"
 
 print_success "アンインストールが完了しました！"
-print_info "注意: $HOME/discord-wakeonlan ディレクトリは手動で削除してください"
+print_info "注意: $INSTALL_DIR ディレクトリは手動で削除してください"

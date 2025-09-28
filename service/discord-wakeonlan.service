@@ -5,16 +5,16 @@ Wants=network.target
 
 [Service]
 Type=simple
-WorkingDirectory=%h/discord-wakeonlan
+WorkingDirectory=INSTALL_DIR_PLACEHOLDER
 ExecStart=NODE_PATH_PLACEHOLDER src/main.js
 Restart=always
 RestartSec=10
-StandardOutput=append:%h/discord-wakeonlan/logs/out.log
-StandardError=append:%h/discord-wakeonlan/logs/err.log
+StandardOutput=append:INSTALL_DIR_PLACEHOLDER/logs/out.log
+StandardError=append:INSTALL_DIR_PLACEHOLDER/logs/err.log
 SyslogIdentifier=discord-wakeonlan
 
 # 環境変数ファイル
-EnvironmentFile=%h/discord-wakeonlan/.env
+EnvironmentFile=INSTALL_DIR_PLACEHOLDER/.env
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
