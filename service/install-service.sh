@@ -54,7 +54,7 @@ fi
 print_success "必要なファイルを確認しました"
 
 # 3. Node.jsのパスを取得
-NODE_PATH=$(which node)
+NODE_PATH="$(command -v node 2>/dev/null || true)"
 if [ -z "$NODE_PATH" ]; then
     print_error "Node.js が見つかりません"
     exit 1
